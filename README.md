@@ -74,7 +74,8 @@ The response convention is :
 ``` js
 var freebox = {
     url: 'mafreebox.freebox.fr',
-    port: 80
+    port: 80,
+    proto: 'http'
 };
 var tokenRequest = {
     app_id: 'fr.freebox.clientapp',
@@ -93,7 +94,8 @@ In this case, the callback function is the default so there is the same result w
 ``` js
 var freebox = {
     url: 'mafreebox.freebox.fr',
-    port: 80
+    port: 80,
+    proto: 'http'
 };
 var tokenRequest = {
     app_id: 'fr.freebox.clientapp',
@@ -111,7 +113,8 @@ client.requestAuthorization(null,tokenRequest);
 ``` js
 var freebox = {
     url: 'mafreebox.freebox.fr',
-    port: 80
+    port: 80,
+    proto: 'http'
 };
 var app = {
     app_id: 'fr.freebox.clientapp',
@@ -132,7 +135,8 @@ var crypto = require('crypto');
 
 var freebox = {
     url: 'mafreebox.freebox.fr',
-    port: 80
+    port: 80,
+    proto: 'http'
 };
 var app = {
     app_id: 'fr.freebox.clientapp',
@@ -208,7 +212,8 @@ Name                                                                      |    M
 TODO: Documention
 
 ### System
-
+Name                                                                      |    Method
+:------------------------------------------------------------------------:|:----------------------------------------:
 TODO: Documentation
 
 ## TODO
