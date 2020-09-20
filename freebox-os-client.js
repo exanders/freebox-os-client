@@ -3,21 +3,26 @@
 /**
  * Define modules
  */
-var request = require('request');
+let request = require('request');
 
 /**
  * Load the endpoint declarations
  */
-var endpoints = [].concat(
+let endpoints = [].concat(
     require('./endpoints/authentication'),
+    require('./endpoints/connection'),
     require('./endpoints/config'),
-    require('./endpoints/download')
+    require('./endpoints/download'),
+    require('./endpoints/filesystem'),
+    require('./endpoints/lan'),
+    require('./endpoints/storage'),
+    require('./endpoints/system')
 );
 
 /**
  * The client
  */
-var client = {};
+// let client = {}; // need multiple instances
 
 
 /**
@@ -71,7 +76,7 @@ function createCallback(next) {
         } else {
             next({
                 success: false,
-                msg: error || response.request.httpModule.STATUS_CODES[response.statusCode],
+                msg: error || 'Error code unavailable',
                 error_code: response.statusCode
             });
         }
@@ -86,26 +91,26 @@ function createCallback(next) {
  * @param  {Object}     endpoint    The description of the endpoint
  * @return {Function}               The action to do for this endpoint
  */
-function createEndPoint(endpoint) {
+function createEndPoint(endpoint, client) {
     return function(routeParams, bodyParam, sessionToken, next) {
 
         /**
          * Define the options
          */
-        var options;
+        let options;
         options = {
           url: client.baseUrl + endpoint.options.url,
           encode: 'utf-8',
           method: endpoint.options.method
-        }
+        };
 
-        if(bodyParam && bodyParam.form){
+        if (bodyParam && bodyParam.formData){
             options.formData = bodyParam.formData;
             options.headers = {
               'X-Fbx-App-Auth': sessionToken,
               'Content-type':'multipart/form-data'
             };
-        }else{
+        } else {
             options.json = bodyParam;
             options.headers = {
               'X-Fbx-App-Auth': sessionToken
@@ -116,7 +121,7 @@ function createEndPoint(endpoint) {
         /**
          * Replace the route parameters
          */
-        for (var i in routeParams) {
+        for (let i in routeParams) {
             options.url = options.url.replace(':' + i, routeParams[i]);
         }
 
@@ -131,10 +136,10 @@ function createEndPoint(endpoint) {
 /**
  * Adds the endpoints to the client
  */
-function buildClient() {
-    for (var i in endpoints) {
-        var endpoint = endpoints[i];
-        client[endpoint.name] = createEndPoint(endpoint);
+function buildClient(client) {
+    for (let i in endpoints) {
+        let endpoint = endpoints[i];
+        client[endpoint.name] = createEndPoint(endpoint, client);
     }
 }
 
@@ -148,9 +153,12 @@ function buildClient() {
  * @return              The client
  */
 function createClient(freebox) {
-    client.baseUrl = 'http://' + (freebox.url || 'mafreebox.freebox.fr') + ':' + (freebox.port || '80') + '/api/v3';
 
-    buildClient();
+    let client = {};
+
+    client.baseUrl = (freebox.proto || 'http') + '://' + (freebox.url || 'mafreebox.freebox.fr') + ':' + (freebox.port || 80) +  '/api/v4';
+
+    buildClient(client);
 
     return client;
 }
